@@ -21,18 +21,23 @@ For problems where the data can be expressed as a stream of similar
 objects separated by newlines to be processed concurrently through a
 series of filters and handles a lot of I/O, it's difficult to think of a
 more ideal language than the shell. A lot of the core parts on a Unix or
-Linux system are designed to express data in such formats.
+Linux system is designed to express data in such formats.
+
+This tutorial is NOT about getting rid of bash altogether! In fact, one
+of the main goals of the section on `Command-Line Interfaces`_ is to
+show how to write programs that integrate well with the process
+orchestration faculties of the shell.
 
 If the Shell is so great, what's the problem?
 +++++++++++++++++++++++++++++++++++++++++++++
 The problem is if you want to do basically anything else, e.g. write
-logic, use control structures, handle complex data... You're going
-to have big problems. When Bash is coordinating external programs, it's
-fantastic. When it's doing any work whatsoever itself, it disintegrates
-into a pile of garbage.
+logic, use control structures, handle data... You're going to have big
+problems. When Bash is coordinating external programs, it's fantastic.
+When it's doing any work whatsoever itself, it disintegrates into a pile
+of garbage.
 
-For me, the fundamental problem with Bash and other shell dialects is
-that text is identifiers and identifiers are text -- and basically
+For me, the fundamental problem with Bash and many other shell dialects
+is that text is identifiers and identifiers are text -- and basically
 everything else is also text. In some sense, this makes the shell a
 homoiconic language, which theoretically means it might have an
 interesting metaprogramming story, until you realize that it basically
@@ -43,7 +48,7 @@ direct path to arbitrary code execution. This is great if arbitrary code
 execution is actually what you're trying to accomplish (like, say, in an
 HTML template engine), but it's not generally what you want.
 
-Bash basically defaults to evaling everything. This very handy for
+Bash basically defaults to evaling everything. This is very handy for
 interactive use, since it cuts down in the need for a lot of explicit
 syntax when all you really want to do is, say, open a file in a text
 editor. This is pretty darn bad in a scripting context because it turns
@@ -60,7 +65,7 @@ let's take the long way there.
 
 .. code:: bash
 
-  $ foo='this   and   that' # variable asignment
+  $ foo='this   and   that' # variable assignment
   $ echo $foo
   this and that
   $ # Oh dear. Text inside the variable was split into arguments on
@@ -107,6 +112,9 @@ And really, that answer should be enough. Do you want to remain sane? Do
 you want people who maintain your code in the future not to curse your
 name? Don't use Bash. Do your part in the battle against mental illness.
 
+*Ok, that was a little hyperbolic. For an opinion about when it's aright
+to use Bash, see:* `Epilogue: Choose the right tool for the job.`_
+
 Why Python?
 +++++++++++
 No particular reason. Perl_ and Ruby_ are also flexible, easy-to-write
@@ -115,7 +123,7 @@ automation. I would recommend against Perl for beginners because it has
 some similar issues to Bash: it was a much smaller language when it was
 created, and a lot of the syntax for the newer features has a bolted-on
 feeling [#]_. However, if one knows Perl well and is comfortable with it,
-it's well suited to the task, and is still a much saner choice for
+it's well suited to the task and is still a much saner choice for
 non-trivial automation scripts, and that is one of its strongest domains.
 
 `Node.js`_ is also starting to be used for administrative stuff these
@@ -126,7 +134,7 @@ good support for this kind of thing, and you should just choose one that
 you like and is widely available on Linux and other \*nix operating
 systems.
 
-They main reason I would recommend Python is if you already know it. If
+The main reason I would recommend Python is if you already know it. If
 you don't know anything besides BASH (or BASH and lower-level languages
 like C or even Java), Python is a reasonable choice for your next
 language. It has a lot of mature, fast third-party libraries in a lot of
@@ -142,8 +150,8 @@ language covered in this very compelling tutorial.
 .. _Node.js: https://developer.atlassian.com/blog/2015/11/scripting-with-node/
 .. _Julia: https://docs.julialang.org/en/stable/
 
-.. [#] I'm refering specifically to Perl 5 here. Perl 6 is a better
-       language, in my opinion, but suffers from lack of adoption.
+.. [#] I'm referring specifically to Perl 5 here. Perl 6 is a better
+       language, in my opinion, but suffers from a lack of adoption.
        https://perl6.org/
 
 Learn Python
@@ -162,13 +170,13 @@ flawed, though I do appreciate that it was written by someone with
 strong opinions about correctness, which has some benefits.
 
 This tutorial assumes Python 3.5 or higher, though it may sometimes use
-idioms from 3.6, and I will attempt to document when have used an idiom
-which doesn't work in 3.4, which is apparently the version that ships
-with the latest CentOS and SLES. Use at least 3.6 if you can. It has
-some cool new features, but the implementation of dictionaries (Python's
-hash map) was also overhauled in this version of Python, which sort of
-undergirds the way the whole object system is implemented and therefore
-is a major win all around.
+idioms from newer versions, and I will attempt to document when have used
+an idiom which doesn't work in 3.4, which is apparently the version that
+ships with the latest CentOS and SLES. Use at least 3.6 if you can. It
+has some cool new features, but the implementation of dictionaries
+(Python's hash map) was also overhauled in this version of Python, which
+sort of undergirds the way the whole object system is implemented and
+therefore is a major win all around.
 
 Basically, always try to use whatever the latest version of Python is.
 Do not use Python 2. It will be officially retired in 2020. That's two
@@ -237,15 +245,15 @@ The ``open()`` function returns a file object. If you just send it the
 path name as a string, it's going to assume it's a text file in the
 default system encoding (UTF-8, right?), and it is opened only for
 reading. You can, of course, do ``my_file = open('my_file.txt')`` as
-well. When you use ``with x as y:`` instead of asignment, it ensures the
+well. When you use ``with x as y:`` instead of assignment, it ensures the
 object is properly cleaned up when the block is exited using something
 called a "context manager". You can do ``my_file.close()`` manually, but
 the ``with`` block will ensure that happens even if you hit an error
 without having to write a lot of extra code.
 
-The gross thing about context managers is that that they add an extra
+The gross thing about context managers is that they add an extra
 level of indentation. Here's a helper function you can use to open a
-context manager for something you want cleaned up after you loop.
+context manager for something you want to be cleaned up after you loop.
 
 .. code:: Python
 
@@ -306,19 +314,18 @@ a file and adds text there. In shell terms, ``'r'`` is a bit like ``<``,
 
 This is just the beginning of what you can do with files. If you want to
 know all their methods and modes, check the official tutorial's section
-on `reading and writing files`_.
-File objects provide a lot of cool interfaces. These interfaces will
-come back with other "file-like objects" which will come up many times
-later, including in the very next section.
-
+on `reading and writing files`_.  File objects provide a lot of cool
+interfaces. These interfaces will come back with other "file-like
+objects" which will come up many times later, including in the very next
+section.
 
 .. _generator function:
   https://docs.python.org/3/tutorial/classes.html#generators
 .. _reading and writing files:
   https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files
 
-CLI interfaces in Python
-------------------------
+Command-Line Interfaces
+-----------------------
 
 Working with ``stdin``, ``stdout`` and ``stderr``
 +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -326,10 +333,24 @@ Unix scripting is all about filtering text streams. You have a stream
 that comes from lines in a file or output of a program and you pipe it
 through other programs. Unix has a bunch of special-purpose programs
 just for filtering text (some of the more popular of which are
-enumerated at the beginning of the previous chapter). Great cli scripts
-should follow the same pattern so you can incorperate them into your
-shell pipelines.  You can, of course, write your script with it's own
-"interactive" interface and read lines of user input one at a time:
+enumerated at the beginning of the previous chapter). Everyone using a
+\*nix system has probably done something like this at one point or
+another:
+
+.. code:: Bash
+
+  program-that-prints-something | grep 'a pattern'
+
+This is the "normal" way to search through the output of a program for
+lines containing whatever it is you're searching for. Your setting the
+``stdout`` of ``program-that-prints-something`` to the stdin of
+``grep``.
+
+
+Great CLI scripts should follow the same pattern so you can incorporate
+them into your shell pipelines.  You can, of course, write your script
+with its own "interactive" interface and read lines of user input one
+at a time:
 
 .. code:: Python
 
@@ -362,8 +383,8 @@ In Python, that looks like this:
                           #    time. Just mentioning it because it's a
                           #    difference between python and shell.
 
-Naturally, you can also slurp stdin in one go -- though this isn't the
-most Unix-y design choice, and you could use up your RAM with a very
+Naturally, you can also slurp stdin in one go, though this isn't the
+most Unix-y design choice and you could use up your RAM with a very
 large file:
 
 .. code:: Python
@@ -391,6 +412,10 @@ For stderr, it's a similar story:
 
 If you want more advanced logging functions, check out the `logging
 module`_.
+
+Using ``stdin``, ``stdout`` and ``stderr``, you can write python
+programs which behave as filters and integrate well into a Unix
+workflow.
 
 .. _logging module:
   https://docs.python.org/3/howto/logging.html#logging-basic-tutorial
@@ -429,7 +454,7 @@ even more advanced CLI interfaces.
 
 .. _argparse: https://docs.python.org/3/howto/argparse.html
 .. _API docs: https://docs.python.org/3/library/argparse.html
-.. _click: http://click.pocoo.org/5/
+.. _click: https://click.palletsprojects.com/
 
 Environment Variables and Config files
 ++++++++++++++++++++++++++++++++++++++
@@ -440,6 +465,7 @@ mapping, so you get to ``$HOME`` like this:
 
 .. code:: Python
 
+  >>> import os
   >>> os.environ['HOME']
   '/home/ninjaaron'
 
@@ -454,15 +480,13 @@ files, and also a json_ parser. I don't really like the idea of
 human-edited json, but go ahead and shoot yourself in the foot if you
 want to. At least it's flexible.
 
-PyYaml_, the yaml parser, and toml_ are third-party libraries that are
-useful for configuration files. (Install ``pyyaml`` with pip. Don't
-download the tarball like the documentation suggests. I don't know why
-it says that.)
+PyYAML_, the YAML parser, and TOML_ are third-party libraries that are
+useful for configuration files.
 
 .. _configparser: https://docs.python.org/3/library/configparser.html
 .. _json: https://docs.python.org/3/library/json.html
-.. _PyYaml: http://pyyaml.org/wiki/PyYAMLDocumentation
-.. _toml: https://github.com/uiri/toml
+.. _PyYAML: http://pyyaml.org/wiki/PyYAMLDocumentation
+.. _TOML: https://github.com/uiri/toml
 
 Filesystem Stuff
 ----------------
@@ -523,23 +547,22 @@ which will be the focus of path manipulation in this tutorial.
   >>> # make file executable with mode bits
   >>> readme.chmod(0o755)
   >>> # ^ note that octal notation is must be explicite.
-  
 Again, check out the documentation for more info. pathlib.Path_. Since
 ``pathlib`` came out, more and more builtin functions and functions in
 the standard library that take a path name as a string argument can also
 take a ``Path`` instance. If you find a function that doesn't, or you're
 on an older version of Python, you can always get a string for a path
-that is correct for your platform by by using ``str(my_path)``. If you
+that is correct for your platform by using ``str(my_path)``. If you
 need a file operation that isn't provided by the ``Path`` instance,
 check the docs for os.path_ and os_ and see if they can help you out. In
 fact, os_ is always a good place to look if you're doing system-level
-stuff with permissions and uids and so forth.
+stuff with permissions and UIDs and so forth.
 
 If you're doing globbing with a ``Path`` instance, be aware that, like
 ZSH, ``**`` may be used to glob recursively. It also (unlike the shell)
-will included hidden files (files whose names begin with a dot). Given
+will include hidden files (files whose names begin with a dot). Given
 this and the other kinds of attribute testing you can do on ``Path``
-instances, it can do a lot of of the kinds of stuff ``find`` can do.
+instances, it can do a lot of the kinds of stuff ``find`` can do.
 
 
 .. code:: Python
@@ -548,7 +571,7 @@ instances, it can do a lot of of the kinds of stuff ``find`` can do.
 
 Oh. Almost forgot. ``p.stat()``, as you can see, returns an
 os.stat_result_ instance. One thing to be aware of is that the
-``st_mode``, (i.e. permissions bits) are represented as an integer, so
+``st_mode``, (i.e. permissions bits) is represented as an integer, so
 you might need to do something like ``oct(p.stat().st_mode)`` to show
 what that number will look like in octal, which is how you set it with
 ``chmod`` in the shell.
@@ -575,7 +598,7 @@ and archiving files and directory trees."
 Here's the overview:
 
 .. code:: Python
-  
+
   >>> import shutil
   >>> # $ mv src dest
   >>> shutil.move('src', 'dest')
@@ -587,14 +610,27 @@ Here's the overview:
   >>> os.remove('a_file') # ok, that's not shutil
   >>> # $ rm -r a_dir
   >>> shutil.rmtree('a_dir')
+  >>> # $ tar caf 'my_archive.tar.gz' 'my_folder'
+  >>> shutil.make_archive('my_archive.tar.gz', 'gztar', 'my_folder')
+  >>> # $ tar xaf 'my_archive.tar.gz'
+  >>> shutil.unpack_archive('my_archive.tar.gz')
+  >>> # chown user:ninjaaron a_file.txt
+  >>> shutil.chown('a_file.txt', 'ninjaaron', 'user')
+  >>> # info about disk usage, a bit like `df`, but not exactly.
+  >>> shutil.disk_usage('.')
+  usage(total=123008450560, used=86878904320, free=36129546240)
+  >>> #  ^ sizes in bytes
+  >>> # which vi
+  >>> shutil.which('vi')
+  '/usr/bin/vi'
+  >>> # info about the terminal you're running in.
+  >>> shutil.get_terminal_size()
+  os.terminal_size(columns=138, lines=30)
 
 That's the thousand-foot view of the high-level functions you'll
 normally be using. The module documentation is pretty good for examples,
 but it also has a lot of details about the functions used to implement
 the higher-level stuff I've shown which may or may not be interesting.
-``shutil`` also has a nice wrapper function for creating zip and tar
-archives with various compression algorithms, ``shutil.make_archive()``.
-Worth a look, if you're into that sort of thing.
 
 I should probably also mention ``os.link`` and ``os.symlink`` at this
 point. They create hard and soft links respectively (like ``link`` and
@@ -608,39 +644,63 @@ Replacing ``sed``, ``grep``, ``awk``, etc: Python regex
 This section is not so much for experienced programmers who already know
 more or less how to use regexes for matching and string manipulation in
 other "normal" languages. Python is not so exceptional in this regard,
-though if you're used to JavaScript, Ruby, Perl and others, you may be
+though if you're used to JavaScript, Ruby, Perl, and others, you may be
 surprised to find that Python doesn't have regex literals. The regex
 functionally is all encapsulated in the re_ module. (The official docs
-also have a `regex HOWTO`_, but it seems more geared towards people who
-may not be experienced with regex.)
+have a `regex HOWTO`_, which is a good place to start if you don't know
+anything about regular expressions. If you have some experience, I'd
+recommend going straight for the re_ API docs.)
 
 This section is for people who know how to use programs like ``sed``,
-``grep`` and ``awk`` and wish to get similar results in Python. I
-admit that writing simple text filters in Python will never be as
-elegant as it is in Perl, since Perl was more or less created to be
-like a super-powered version of the ``sh`` + ``awk`` + ``sed``. The
-same thing can sort of be said of ``awk``, the original text-filtering
-language on Unix. The main reason to use Python for these tasks is
-that the project is going to scale a lot more easily when you want to
-do something a bit more complex.
+``grep`` and ``awk`` and wish to get similar results in Python, though
+short explanations will be provided of what those utilities are commonly
+used for. The intent is not that you should use Python wherever you
+might use one-liners with these programs in the course of normal shell
+usage (or in the the middle of the kinds of process orchestration
+scripts that Bash does so well). The idea is rather that, when writing a
+Python script, you won't be tempted to shell out for text processing.
 
-One thing to be aware of is that Python's regex is more like PCRE
-(Perl-style) than BRE or ERE that most shell utilities support. If you
-mostly do ``sed`` or ``grep`` without the ``-E`` option, you may want
-to look at the rules for Python regex (BRE is the regex dialect you
-know). If you're used to writing regex for ``awk`` or ``egrep`` (ERE),
-Python regex is more or less a superset of what you know. You still
-may want to look at the documentation for some of the more advanced
-things you can do.
+I admit that writing simple text filters in Python will never be as
+elegant as it is in Perl, since Perl was more or less created to be like
+a super-powered version of the ``sh`` + ``awk`` + ``sed``. The same
+thing can sort of be said about ``awk``, the original text-filtering
+language on Unix. The main reason to use Python for these tasks is that
+the project is going to scale a lot more easily when you want to do
+something a bit more complex.
+
+Another thing to keep in mind is that python has built-in operations
+that you can use if you just need to match a string, rather than a
+regular expression. Simple string operations are much faster than
+regular expressions, though not as powerful.
+
+.. Note::
+
+  One thing to be aware of is that Python's regex is more like PCRE
+  (Perl-style -- also similar to Ruby, JavaScript, etc.) than BRE or ERE
+  that most shell utilities support. If you mostly do ``sed`` or
+  ``grep`` without the ``-E`` option, you may want to look at the rules
+  for Python regex (BRE is the regex dialect you know). If you're used
+  to writing regex for ``awk`` or ``egrep`` (ERE), Python regex is more
+  or less a superset of what you know. You still may want to look at the
+  documentation for some of the more advanced things you can do. If you
+  know regex from either vi/Vim or Emacs, they both use their own
+  dialect of regex, but they are supersets of BRE, and Python's regex
+  will have some major differences.
 
 .. _re: https://docs.python.org/3/library/re.html
 .. _regex HOWTO: https://docs.python.org/3/howto/regex.html
 
 How to ``grep``
 +++++++++++++++
+``grep`` is the Unix utility that goes through each line of a file,
+tests if it contains a certain pattern, and then prints the lines that
+match. If you're a programmer and you don't use ``grep``, start using
+it! Retrieving matching lines in a file is easy with Python, so we'll
+start there.
+
 If you don't need pattern matching (i.e. something you could do with
 ``fgrep``), you don't need regex to match a substring. You can simply
-use builtin syntax:
+use built-in syntax:
 
 .. code:: python
 
@@ -657,7 +717,7 @@ Otherwise, you need the regex module to match things:
   >>> re.search(r'a pattern', r'string without the pattern')
   >>> # Returns None, which isn't printed in the Python REPL
 
-I'm not going to go into the details of the "match object" that the
+I'm not going to go into the details of the "match object" that
 is returned at the moment. The main thing for now is that it evaluates
 to ``True`` in a boolean context. You may also notice I use raw strings
 ``r''``. This is to keep Python's normal escape sequences from being
@@ -680,8 +740,35 @@ a list comprehension because that means each result is produced as
 needed with lazy evaluation. This will save your RAM if you're working
 with a large file. You can invert the result, like ``grep -v`` simply by
 adding ``not`` to the ``if`` clause. There are also flags you can add to
-do things like ignore case (``flags=re.I``), etc. Check out the docs for
-more.
+do things like ignoring the case (``flags=re.I``), etc. Check out the docs
+for more.
+
+Example: searching logs for errors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Say you want to look through the log file of a certain service on your
+system for errors. With grep, you might do something like this:
+
+.. code:: bash
+
+  $ grep -i error: /var/log/some_service.log
+
+This will search through ``/var/log/some_service.log`` for any line
+containing the string ``error:``, ignoring case. To do the same thing in
+Python:
+
+.. code:: Python
+
+  with open('/var/log/some_service.log') as log:
+      matches = (line for line in log if 'error:' in line.lower())
+      # line.lower() is a substitute for -i in grep, in this case
+
+The difference here is that the bash version will print all the lines,
+and the python version is just holding on to them for further
+processing. If you want to print them, the next step is
+``print(*matches)`` or ``for line in matches: print(line, end='')``.
+However, this is in the context of a script, so you probably want to
+extract further information from the line and do something
+programmatically with it anyway.
 
 .. _generator expression:
   https://docs.python.org/3/tutorial/classes.html#generator-expressions
@@ -689,10 +776,17 @@ more.
 
 How to ``sed``
 ++++++++++++++
-Just a little tiny disclaimer: I know ``sed`` can do a lot of things and
-is really a "stream editor." I'm just covering how to do substitutions
-with Python, though, certainly, anything you can do with ``sed`` can
-also be done in Python.
+``sed`` can do a LOT of things. It's more or less "text editor" without
+a window. Instead of editing text manually, you give ``sed``
+instructions about changes to apply to lines, and it does it all in one
+shot. (The default is to print what the file would look like with
+modification. The file isn't actually changed unless you use a special
+flag.)
+
+I'm not going to cover all of that. Back when I wrote more shell scripts
+and less Python, the vast majority of my uses for ``sed`` were simply to
+use the substitution facilities to change instances of one pattern into
+something else, which is what I cover here.
 
 .. code:: Python
 
@@ -703,18 +797,24 @@ also be done in Python.
 
 re.sub_ has a lot of additional features, including the ability to use a
 *function instead of a string* for the replacement argument. I consider
-this to be very useful.
+this to be very useful. If you're new to regex, note especially the
+section about backreferences in replacements. You may wish to check the
+section in the `regex HOWTO`_ about `Search and Replace`_ as well.
 
 .. _re.sub: https://docs.python.org/3/library/re.html#re.sub
+.. _Search and Replace:
+  https://docs.python.org/3/howto/regex.html#search-and-replace
 
 How to ``awk``
 ++++++++++++++
 The ``sed`` section needed a little disclaimer. The ``awk`` section
-needs a bigger one. AWK is a Turing-complete text-processing language.
-I'm not going to cover how to do everything AWK can do with Python
-idioms. I'm just going to cover the simple case of working with fields
-in a line, as it is commonly used in shell scripts and on the command
-line.
+needs a bigger one. AWK is a Turing-complete text/table processing
+language.  I'm not going to cover how to do everything AWK can do with
+Python idioms. [#]_
+
+However, inside of shell scripts, it's most frequently used to extract
+fields from tabular data, such as tsv files. Basically, it's used to
+split strings.
 
 .. code:: Python
 
@@ -727,28 +827,62 @@ line.
 
 As is implied in this example, the str.split_ method splits on sections
 of contiguous whitespace by default. Otherwise, it will split on whatever
-is given as a delimiter.
+is given as a delimiter. For more on splitting with regular expressions,
+see re.split_ and `Splitting Strings`_.
 
-.. _str.split:
-  https://docs.python.org/3/library/stdtypes.html#str.split
+.. _str.split: https://docs.python.org/3/library/stdtypes.html#str.split
+.. _re.split: https://docs.python.org/3/library/re.html#re.split
+.. _Splitting Strings:
+  https://docs.python.org/3/howto/regex.html#splitting-strings
+
+.. [#] It has been pointed out to me that ``sed`` is also Turing
+       complete, and it seems to be the case. However, implementing
+       algorithms in ``sed`` is not nice. AWK is really a rather pleasant
+       language.
 
 Running Processes
 -----------------
+
+Disclaimer
+++++++++++
 I come to this section at the end of the tutorial because one
 *generally should not be running a lot of processes inside of a Python
-script*. However, there are plenty of times when this "rule" should be
-broken. Say you want to do some automation with packages on your
-system; you'd be nuts not to use ``apt`` or ``yum`` (spelled ``dnf``
-these days) or whatever your package manager is. Same applies if
-you're doing ``mkfs`` or using a very mature and featureful program
-like ``rsync``. My general rule is that any kind of filtering utility
-should be avoided, but specialized programs for manipulating the
-system are fair game -- However, in some cases, there will be a
-3rd-party Python library that provides a wrapper on the underlying C
-code. The library will, of course, be faster than spawning a new
-process in most cases. Use your best judgement. Be extra judicious if
-you're trying to write re-usable library code.
+script*. One common strategy in the realm of complex administrative
+tasks is to do the orchestration in bash and hand data handling off to
+Python, which is one of the reasons it's important for your program to
+have a good command-line interface. If you can read data from stdin and
+print to stdout and stderr, you're in good shape!
 
+However, there are times when this model of separation of domains
+between Python and the shell is not practical, and it's easier simply to
+execute the external program from inside your Python script.
+Practicality beats purity.
+
+Say you want to do some automation with packages on your system; you'd
+be nuts not to use ``apt`` or ``yum`` (spelled ``dnf`` these days) or
+whatever your package manager is. Same applies if you're doing ``mkfs``
+or using a very mature and featureful program like ``rsync``. My general
+rule is that any kind of filtering utility should be avoided, but
+specialized programs for manipulating the system are fair game --
+However, in some cases, there will be a 3rd-party Python library that
+provides a wrapper on the underlying C code. The library will, of
+course, be faster than spawning a new process in most cases. Use your
+best judgment. Be extra judicious if you're trying to write re-usable
+library code.
+
+Another thing to keep in mind (and this goes for the shell as well, it's
+just much more difficult to avoid it), is don't spawn processes inside
+of hot loops. Spawning new processes is a relatively expensive job for
+the operating system. Spawning one instance or even ten is no big deal
+(depending on the program, of course). Spawning a process thousands or
+millions of times in a loop, no matter how lightweight the process is,
+is a terrible idea. On the other hand, using an optimized C program that
+can do a lot of work at one shot may well be faster than trying to do
+the same work natively in Python (provided there is no well-supported C
+library for Python).
+
+The ``subprocess`` Module
++++++++++++++++++++++++++
 There are a number of functions which shall not be named in the os_
 module that can be used to spawn processes. They have a variety of
 problems. Some run processes in subshells (c.f. injection
@@ -774,7 +908,8 @@ option if you're determined to write bad code.
 On the other hand, it is a little cumbersome to work with, so there are a
 lot of third-party libraries to simplify it. Plumbum_ is probably the
 most popular of these. Sarge_ is also not bad. My own contribution to
-the field is easyproc_.
+the field is easyproc_ (though the documentation needs to be completely
+rewritten).
 
 There are also a couple of Python supersets that allow inlining shell
 commands in python code. xonsh_ is one, which also provides a fully
@@ -830,7 +965,7 @@ least try something else. You could, do this manually:
 
   >>> proc = sp.run(['ls', '-lh', 'foo bar baz'])
   ls: cannot access 'foo bar baz': No such file or directory
-  >>> if proc.returncode != 0:                   
+  >>> if proc.returncode != 0:
   ...     # do something else
 
 This would be most useful in cases where a non-zero exit code indicates
@@ -868,7 +1003,7 @@ pretty straight-forward:
 
   >>> with open('./foo', 'w') as foofile:
   ...     sp.run(['ls'], stdout=foofile)
-  
+
 Pretty similar with input:
 
 .. code:: Python
@@ -894,7 +1029,8 @@ bytes, not strings. You can decode your string, or you can use the flag
 to ensure the stream is a python string, which, in their infinite
 wisdom, the authors of the ``subprocess`` module chose to call
 ``universal_newlines``, as if that's the most important distinction
-between bytes and strings in Python.
+between bytes and strings in Python. *Update: as of Python 3.7,
+`universal_newlines` is aliased to `text`*
 
 .. code:: Python
 
@@ -903,12 +1039,12 @@ between bytes and strings in Python.
   foo
   out.html
   README.rst
-  
+
 So that's awkward. In fact, this madness was one of my primary
 motivations for writing easyproc_.
 
-If you want to sen a string to the stdin of a process, you will use a
-different ``run`` parameter, ``input`` (again, requries bytes unless
+If you want to send a string to the stdin of a process, you will use a
+different ``run`` parameter, ``input`` (again, requires bytes unless
 ``universal_newlines=True``).
 
 .. code:: Python
@@ -931,7 +1067,6 @@ different ``run`` parameter, ``input`` (again, requries bytes unless
   >>> sp.run(['tr', 'a-z', 'A-Z'], input='foo bar baz\n', universal_newlines=True)
   FOO BAR BAZ
   CompletedProcess(args=['tr', 'a-z', 'A-Z'], returncode=0)
-  >>> ## perturbation, thy name is `universal_newlines`.
 
 The ``stderr`` Parameter
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -948,7 +1083,7 @@ for dealing with messages from the process. It works as expected:
   b"ls: cannot access 'foo bar baz': No such file or directory\n"
 
 However, another common thing to do with stderr in administrative
-scripts is to to combine it with stdout using the oh-so-memorable
+scripts is to combine it with stdout using the oh-so-memorable
 incantation shell incantation of ``2>&1``. ``subprocess`` has a thing
 for that, too, the ``STDOUT`` constant.
 
@@ -975,8 +1110,8 @@ Background Processes and Concurrency
 ``subprocess.run`` starts a process, waits for it to finish, and then
 returns a ``CompletedProcess`` instance that has information about what
 happened. This is probably what you want in most cases. However, if you
-want processes to run in the background or need interact with them while
-they continue to run, you need the Popen_ constructor.
+want processes to run in the background or need to interact with them while
+they continue to run, you need the the Popen_ constructor.
 
 If you simply want to start a process in the background while you get on
 with your script, it's a lot like ``run``.
@@ -1045,11 +1180,15 @@ package:
 
 ``shlex.quote``: protecting against shell injection
 +++++++++++++++++++++++++++++++++++++++++++++++++++
+The ``subprocess`` module, as mentioned earlier, is safe from injection
+by default, unless ``shell=True`` is used. However, there are some
+programs that will give arguments to a shell after they are started. SSH
+is a classic example. Every argument you send with ssh gets parsed by a
+shell on the remote system.
+
 As soon as a process gets a shell, you're giving up one of the main
 benefits of using Python in the first place. You get back into the realm
-of injection vulnerabilities. One situation where this might come up is
-when you're forced into using a shell would be executing something over
-ssh.
+of injection vulnerabilities.
 
 Basically, instead of this:
 
@@ -1082,6 +1221,53 @@ This is where all the stuff goes that doesn't really need detailed
 coverage in this tutorial, but it's something you need to do often
 enough in shell scripts that it deserves pointers to additional
 resources.
+
+Getting the Time
+++++++++++++++++
+In administrative scripting, one frequently wants to put a timestamp in
+a file name for naming logs or whatever. In a shell script, you just
+use the output of ``date`` for this. Python has two libraries for
+dealing with time, and either is good enough to handle this. The time_
+module wraps time functions in libc. If you want to get a timestamp out
+of it, you do something like this:
+
+.. code:: Python
+
+  >>> import time
+  >>> time.strftime('%Y.%m.%d')
+  '2018.08.18'
+
+This can use any of the format spec you see when you run ``$ man date``.
+There is also a ``time.strptime`` function which will take a string as
+input and use the same kind of format string to parse the time out of it
+and into a tuple.
+
+The datetime_ module provides classes for working with time at a high
+level. It's a little cumbersome for very simple things, and incredibly
+helpful for more sophisticated things like math involving time. The one
+handy thing it can do for our case is to give us a string of the current
+time without the need for a format specifier.
+
+.. code:: Python
+
+  >>> import datetime
+  >>> # get the current time as a datetime object
+  >>> datetime.datetime.now()
+  datetime.datetime(2018, 8, 18, 10, 5, 56, 518515)
+  >>> now = _
+  >>> str(now)
+  '2018-08-18 10:05:56.518515'
+  >>> now.strftime('%Y.%m.%d')
+  '2018.08.18'
+
+This means that, if you're happy with the default string representation of
+the datetime class, you can just do ``str(datetime.datetime.now())`` to
+get the current timestamp. There is also a
+``datetime.datetime.strptime()`` to generate a datetime instance from a
+timestamp.
+
+.. _time: https://docs.python.org/3/library/time.html
+.. _datetime: https://docs.python.org/3/library/datetime.html
 
 Interprocess Communication
 ++++++++++++++++++++++++++
@@ -1120,6 +1306,22 @@ to get better performance using the ``UnixStreamServer`` class, and you
 won't use up a port. Plus, Unix sockets will make your Unix beard grow
 better.
 
+The problem with either of these is that they just block until they get
+a message (unless you use the threaded socket server, which might be
+fine in some cases). If you want your daemon to do work while
+simultaneously listening for input, you need threads or asyncio.
+Unfortunately for you, this tutorial is about replacing Bash with
+Python, and I'm not about to try to teach you concurrency.
+
+.. Note::
+  I'll just say that the python threading module is fine for IO-bound
+  multitasking on a small scale. If you need something large-scale, use
+  asyncio. If you need real concurrent execution, know that Python
+  threads are a lie, and asyncio doesn't do that. You need
+  multiprocessing. If you need concurrent execution, but processes are
+  too expensive, use another programming language. Python has
+  limitations in this area.
+
 .. _socketserver: https://docs.python.org/3/library/socketserver.html
 
 Downloading Web Pages and Files
@@ -1135,3 +1337,104 @@ For that, you need urllib.request_.
 
 .. _requests: http://docs.python-requests.org/en/master/
 .. _urllib.request: https://docs.python.org/3/library/urllib.request.html
+
+Epilogue: Choose the right tool for the job.
+--------------------------------------------
+One of the main criticism of this tutorial (I suspect from people who
+haven't read it very well) is that it goes against the philosophy of
+using the best tool for the job. My intention is not that people rewrite
+all existing Bash in Python (though sometimes rewrites might be a net
+gain), nor am I attempting to get people to entirely stop writing new
+Bash scripts.
+
+The tutorial has also been accused of being a "commercial for Python."
+I would have thought the `Why Python?`_ section would show that this is
+not the case, but if not, let me reiterate: Python is one of many
+languages well suited to administrative scripting. The others also
+provide a safer, clearer way to deal with data than the shell. My goal
+is not to get people to use Python as much as it is to try to get people
+to stop handling data in shell scripts.
+
+The "founding fathers" of Unix had already recognized the fundamental
+limitations of the Bourne shell for handling data and created AWK, a
+complementary, string-centric data parsing language. Modern Bash, on the
+other hand, has added a lot of data related features which make it
+possible to do many of the things you might do in AWK directly in Bash.
+Do not use them. They are ugly and difficult to get right. Use AWK
+instead, or Perl or Python or whatever.
+
+When to use Bash
+++++++++++++++++
+I do believe that for a program which deals primarily with starting
+processes and connecting their inputs and outputs, as well as certain
+kinds of file management tasks, the shell should still be the first
+candidate. A good example might be setting up a server. I keep config
+files for my shell environment in Git (like any sane person), and I
+use ``sh`` for all the setup. That's fine. In fact, it's great. Running
+some commands and symlinking files is a usecase that fits perfectly to
+the strengths of the shell.
+
+I also have shell scripts for automating certain parts of my build,
+testing and publishing workflow for my programming, and I will probably
+continue to use such scripts for a long time. (I also use Python for
+some of that stuff. Depends on the nature of the task.)
+
+Warning Signs
++++++++++++++
+Many people have rule about the length of their Bash scripts. It is oft
+repeated on the Internet that, "If your shell script gets to fifty lines,
+rewrite in another language," or something similar. The number of lines
+varies from 10 to 20 to 50 to 100. Among the Unix old guard, "another
+language" is basically always Perl. I like Python because reasons, but
+the important thing is that it's not Bash.
+
+This kind of rule isn't too bad. Length isn't the problem, but length
+*can* be a side-effect of complexity, and complexity is sort of the
+arch-enemy of Bash. I look for the use of certain features to be an
+indicator that it's time to consider a rewrite. (note that "rewrite" can
+mean moving certain parts of the logic into another language while still
+doing orchestration in Bash). These "warning signs are" listed in order
+of more to less serious.
+
+- If you ever need to type the characters ``IFS=``, rewrite immediately.
+  You're on the highway to Hell.
+- If data is being stored in Bash arrays, either refactor so the data
+  can be streamed through pipelines or use a different language. As with
+  ``IFS``, it means you're entering the wild world of the shell's string
+  splitting rules. That's not the world for you.
+- If you find yourself using braced parameter expansion syntax,
+  ``${my_var}``, and anything is between those braces besides the name
+  of your variable, it's a bad sign. For one, it means you might be
+  using an array, and that's not good. If you're not using an array, it
+  means you're using the shell's string manipulation capabilities. There
+  are cases where this might be allowable (determining the basename of a
+  file, for example), but the syntax for that kind of thing is very
+  strange, and so many other languages supply better string manipulating
+  tools. If you're doing batch file renaming, ``pathlib`` provides a
+  much saner interface, in my opinion.
+- Dealing with process output in a loop is not a great idea. If you HAVE
+  to do it, the only right way is with ``while IFS= read -r line``.
+  Don't listen to anyone who tells you differently, ever. Always try to
+  refactor this case as a one-liner with AWK or Perl, or write a script
+  in another language to process the data and call it from Bash.  If you
+  have a loop like this, and you are starting any processes inside the
+  loop, you will have major performance problems. This will eventually
+  lead to refactoring with Bash built-ins. In the final stages, it
+  results in madness and suicide.
+- Bash functions, while occasionally useful, can be a sign of trouble.
+  All the variables are global by default. It also means there is enough
+  complexity that you can't do it with a completely linear control flow.
+  That's also not a good sign for Bash. A few Bash functions might be
+  alright, but it's a warning sign.
+- Conditional logic, while it can definitely be useful, is also a sign
+  of increasing complexity. As with functions, using it doesn't mean you
+  have to rewrite, but every time you write one, you should ask yourself
+  the question as to whether the task you're doing isn't better suited
+  to another language.
+
+Finally, whenever you use a ``$`` in Bash (parameter expansion), you
+must use quotation marks. Always only ever use quotation marks. Never
+forget. Never be lazy. This is a security hazard. As previously
+mentioned, Bash is an injection honeypot. There are a few cases where
+you don't need the quotation marks. They are the exceptions. Do not
+learn them. Just use quotes all the time. It is always correct.
